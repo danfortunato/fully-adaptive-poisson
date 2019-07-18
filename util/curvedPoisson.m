@@ -3,11 +3,11 @@ function [uu, xx, yy] = curvedPoisson(f, x, y, varargin)
 %
 %   CURVEDPOISSON(F, X, Y) solves Poisson's equation with zero Dirichlet
 %   boundary conditions using the coordinate transformations given by
-%   X = X(r,t) and Y(r,t), specified as a function handle or chebfun2.
+%   X = X(t,r) and Y(t,r), specified as a function handle or chebfun2.
 %   The default discretization is tensor-product Chebyshev.
 %
 %   CURVEDPOISSON(F, X, Y, 'periodic') solves using a tensor-product
-%   Chebyshev-Fourier discretization.
+%   Fourier-Chebyshev discretization.
 %
 %   CURVEDPOISSON(F, X, Y, N) solves using an N x N discretization.
 %
@@ -19,10 +19,10 @@ n = 21;
 m = n;
 dom = [0 2*pi 0 1];
 
-if ( isa(x,'function_handle') )
+if ( isa(x, 'function_handle') )
     x = chebfun2(x, dom);
 end
-if ( isa(y,'function_handle') )
+if ( isa(y, 'function_handle') )
     y = chebfun2(y, dom);
 end
 
@@ -71,11 +71,11 @@ dydt = feval(diff(y,1,2), tt, rr);
 dydr = feval(diff(y,1,1), tt, rr);
 J = dxdr.*dydt - dxdt.*dydr;
 
-% Compute d[r,t]/d[x,y] as the inverse of the Jacobian
-drdx =  dydt ./ J;
-drdy = -dxdt ./ J;
+% Compute d[t,r]/d[x,y] as the inverse of the Jacobian
 dtdx = -dydr ./ J;
 dtdy =  dxdr ./ J;
+drdx =  dydt ./ J;
+drdy = -dxdt ./ J;
 
 %% Construct operators
 
@@ -89,11 +89,12 @@ else
 end
 Dr = sclr * diffmat(m);
 
-mn = m*n;
-Im = speye(m);
-In = speye(n);
-Dx = spdiags(drdx(:),0,mn,mn) * kron(In,Dr) + spdiags(dtdx(:),0,mn,mn) * kron(Dt,Im);
-Dy = spdiags(drdy(:),0,mn,mn) * kron(In,Dr) + spdiags(dtdy(:),0,mn,mn) * kron(Dt,Im);
+Im = eye(m);
+In = eye(n);
+Dt2d = kron(Dt,Im);
+Dr2d = kron(In,Dr);
+Dx = diag(dtdx(:)) * Dt2d + diag(drdx(:)) * Dr2d;
+Dy = diag(dtdy(:)) * Dt2d + diag(drdy(:)) * Dr2d;
 L = Dx^2 + Dy^2;
 
 %% Impose boundary conditions
@@ -117,9 +118,14 @@ u = L \ ff(:);
 uu = zeros(m,n);
 if ( periodic )
     uu(2:m-1,:) = reshape(u,m-2,n);
-    uu = [uu uu(:,1)];
-    xx = [xx xx(:,1)];
-    yy = [yy yy(:,1)];
+    if ( nargout == 1 )
+        uu = chebfun2(uu, dom, {'trig', []});
+    else
+        % Wrap the data
+        uu = [uu uu(:,1)];
+        xx = [xx xx(:,1)];
+        yy = [yy yy(:,1)];
+    end
 else
     uu(2:m-1,2:n-1) = reshape(u,m-2,n-2);
     if ( nargout == 1 )
