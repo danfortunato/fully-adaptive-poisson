@@ -34,10 +34,10 @@ if ( nargin == 4 )
         periodic = strcmpi(varargin{1}, 'periodic');
     end
 elseif ( nargin == 5 )
-    n = varargin{1};
-    m = n;
+    m = varargin{1};
+    n = m;
     if ( isscalar(varargin{2}) )
-        m = varargin{2};
+        n = varargin{2};
     else
         periodic = strcmpi(varargin{2}, 'periodic');
     end
