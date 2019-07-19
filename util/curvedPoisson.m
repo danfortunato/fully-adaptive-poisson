@@ -119,7 +119,7 @@ uu = zeros(m,n);
 if ( periodic )
     uu(2:m-1,:) = reshape(u,m-2,n);
     if ( nargout == 1 )
-        uu = chebfun2(uu, dom, {'trig', []});
+        uu = chebfun2(uu, dom, 'trigx');
     else
         % Wrap the data
         uu = [uu uu(:,1)];
