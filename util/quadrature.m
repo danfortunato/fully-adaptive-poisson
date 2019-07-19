@@ -10,7 +10,7 @@ end
 
 switch rule
     case 'ptr'
-        x{1} = 2*pi/N*(1:N).';
+        x{1} = 2*pi/N*(0:N-1).';
         w{1} = 2*pi/N*ones(N,1);
     case 'panel'
         if ( strcmp(np, 'auto') )
