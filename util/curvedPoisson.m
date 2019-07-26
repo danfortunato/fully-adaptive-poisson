@@ -1,10 +1,11 @@
 function [uu, xx, yy] = curvedPoisson(f, x, y, varargin)
 %CURVEDPOISSON   Spectral Poisson solver in curvilinear coordinates.
 %
-%   CURVEDPOISSON(F, X, Y) solves Poisson's equation with zero Dirichlet
-%   boundary conditions using the coordinate transformations given by
-%   X = X(t,r) and Y(t,r), specified as a function handle or chebfun2.
-%   The default discretization is tensor-product Chebyshev.
+%   CURVEDPOISSON(F, X, Y) solves Poisson's equation with righthand side F
+%   and zero Dirichlet boundary conditions using the coordinate
+%   transformations given by X = X(t,r) and Y(t,r), specified as a function
+%   handle or chebfun2. The default discretization is tensor-product
+%   Chebyshev.
 %
 %   CURVEDPOISSON(F, X, Y, 'periodic') solves using a tensor-product
 %   Fourier-Chebyshev discretization.
