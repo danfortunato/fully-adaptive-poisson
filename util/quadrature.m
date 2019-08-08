@@ -1,4 +1,4 @@
-function [x,w,breaks] = quadrature(N, rule, np)
+function [x,w,breaks] = quadrature(N, rule, np, resfun)
 %QUADRATURE   Quadrature rule on [0,2pi].
 
 if ( nargin < 3 )
@@ -16,13 +16,13 @@ switch rule
     case 'panel'
         if ( strcmp(np, 'auto') )
             % Adaptive panels
-            % f =  ...
-            % t = split(f, 0, 2*pi, N);
+            breaks = split(resfun, 0, 2*pi, N);
         else
             % Uniform panels
             breaks = 2*pi*(0:np)/np;
         end
         [x01,w01] = gauss(N, 0, 1);
+        np = numel(breaks)-1;
         x = cell(np,1);
         w = cell(np,1);
         for k = 1:np
