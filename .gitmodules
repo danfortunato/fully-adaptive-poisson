@@ -7,3 +7,6 @@
 [submodule "external/BIE2D"]
 	path = external/BIE2D
 	url = https://github.com/ahbarnett/BIE2D.git
+[submodule "external/linequad"]
+	path = external/linequad
+	url = https://github.com/ludvigak/linequad.git
