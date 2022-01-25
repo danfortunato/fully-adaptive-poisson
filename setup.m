@@ -5,14 +5,19 @@ warnstate = warning('off', 'MATLAB:dispatcher:nameConflict');
 fprintf('Initializing path directories...')
 root = pwd;
 addpath(root)
-addpath([root, '/bie'])
-addpath([root, '/sem'])
-addpath([root, '/tests'])
-addpath([root, '/scripts'])
+addpath([root '/bie'])
+addpath([root '/sem'])
+addpath([root '/tests'])
+addpath([root '/scripts'])
+
+% External dependencies
+addpath([root '/external/inpoly'])
+addpath([root '/external/kdtree/toolbox'])
+addpath([root '/external/BIE2D/panels'])
+addpath([root '/external/BIE2D/kernels'])
+addpath([root '/external/BIE2D/utils'])
 addpath('~/Research/Barnett/treefun')
 addpath('~/Research/fmmlib2d/matlab')
-addpath('~/Research/kdtree/toolbox')
-addpath('~/Research/Barnett/inpoly')
 
 % Add linequad for close panel evaluation
 linequadroot = '~/Research/Barnett/linequad/matlab';
