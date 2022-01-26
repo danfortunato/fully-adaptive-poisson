@@ -1,2 +1,2 @@
-# adaptive-bie
-Boundary integral equations with adaptivity in 2D
+# About
+A fully adaptive Poisson solver in 2D based on function intension.
