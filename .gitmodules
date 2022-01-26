@@ -10,3 +10,6 @@
 [submodule "external/linequad"]
 	path = external/linequad
 	url = https://github.com/ludvigak/linequad.git
+[submodule "external/treefun"]
+	path = external/treefun
+	url = https://github.com/danfortunato/treefun.git
