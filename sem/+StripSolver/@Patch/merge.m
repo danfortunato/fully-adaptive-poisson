@@ -34,7 +34,7 @@ if ( isempty(s1) )
 end
 
 % Compute new D2N maps:
-sparse_tol = eps;
+sparse_tol = 1e-14;
 if ( issparse(D2Na) && issparse(D2Nb) && issparse(S) )
 
     nz = sum(abs(S) >= sparse_tol, 'all');
@@ -48,6 +48,7 @@ if ( issparse(D2Na) && issparse(D2Nb) && issparse(S) )
     D2Na_i1 = D2Na(i1,i1);
     D2Nb_i2 = D2Nb(i2,i2);
     nzmax = nnz(D2Na_i1) + nnz(D2Nb_i2) + n1 + n2;
+    % TODO: Use block diag or somesuch to speed up indexing
     D2N = sparse(n1+n2, n1+n2+1, nzmax);
     D2N(1:n1,1:n1) = D2Na_i1;
     D2N(n1+(1:n2),n1+(1:n2)) = D2Nb_i2;

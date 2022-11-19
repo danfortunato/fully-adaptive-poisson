@@ -31,7 +31,7 @@ end
 scl = max(sclx, scly);
 
 % Check for intersecting edges (with a tolerance):
-tol = 1e-6 * scl;
+tol = 1e-4 * scl;
 [iA1,iB1] = intersectTol(edgesA(:,[1 2 3 4]), edgesB(:,1:4), tol);
 % Must check in both directions:
 [iA2,iB2] = intersectTol(edgesA(:,[3 4 1 2]), edgesB(:,1:4), tol);

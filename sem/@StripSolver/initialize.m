@@ -14,10 +14,8 @@ function initialize(S, varargin)
 %
 %   See also BUILD, SOLVE.
 
-tic
 % Initialize all leaf patches:
 S.patches = StripSolver.Leaf.initialize(S.domain, varargin{:});
 %S.patches = StripSolver.Leaf.parinitialize(S.domain, varargin{:});
-toc
 
 end
