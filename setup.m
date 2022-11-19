@@ -6,7 +6,6 @@ fprintf('Initializing path directories...')
 root = fileparts(mfilename('fullpath'));
 addpath(root)
 addpath([root '/bie'])
-addpath([root '/sem'])
 addpath([root '/tests'])
 addpath([root '/scripts'])
 
