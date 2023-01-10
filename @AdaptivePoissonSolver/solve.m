@@ -1,4 +1,4 @@
-function u = solve(S, bc)
+function u = solve(S, bc, opts)
 %SOLVE   Perform a partition-of-unity solve using function intension.
 %   u = SOLVE(S, bc) returns a struct u containing functions such that
 %
@@ -10,15 +10,34 @@ function u = solve(S, bc)
 %      lap(u) = S.f  in int(S.Gamma),
 %           u = bc   on S.Gamma.
 
+defaults = [];
+defaults.debug = true;
+defaults.useResampledCurve = false;
+
+if ( nargin < 3 )
+    opts = defaults;
+else
+    opts = setDefaults(opts, defaults);
+end
+
 % Pack up into a struct for easy passing later
 u = struct();
 
+Timer.tic();
 u.bulk = solveBulk(S);
-[u.strip, bc_strip] = solveStrip(S, u.bulk);
-[u.glue_i, u.glue_e] = solveGlue(S, u.bulk, bc_strip);
-u.bc = solveBC(S, bc, bc_strip, u.glue_e);
-% u_i = @(x,y) u.bulk(x,y) + u.glue_i(x,y) + u.bc(x,y);
-% u_e = @(x,y)   stripvals + u.glue_e(x,y) + u.bc(x,y);
+Timer.toc('Box code');
+
+Timer.tic();
+[u.strip, du_strip] = solveStrip(S);
+Timer.toc('Strip solve');
+
+Timer.tic();
+u.glue = solveGlue(S, u.bulk, du_strip);
+Timer.toc('Glue correction');
+
+Timer.tic();
+u.bc = solveBC(S, bc, u.glue.ext, opts);
+Timer.toc('Boundary solve');
 
 end
 
@@ -28,55 +47,59 @@ function u_bulk = solveBulk(S)
 %
 %      lap(u_bulk) = S.tf  in S.domain.
 
-u_bulk = treefun2.poisson(-S.tf);
+u_bulk = treefun2.poisson(-S.tf, S.isource);
 
 end
 
-function [u_strip, bc_strip] = solveStrip(S, bc)
+function [u_strip, du_strip] = solveStrip(S)
 %SOLVESTRIP   Solve the strip problem.
-%   [u_strip, bc_strip] = SOLVESTRIP(S, bc) computes a function u_strip
-%   such that
+%   [u_strip, du_strip] = SOLVESTRIP(S) computes a function u_strip such
+%   that
 %
-%      lap(u_strip) = S.f       in int(S.Gamma) \ int(S.Gamma1),
-%           u_strip = bc_strip  on S.Gamma + S.Gamma1,
+%      lap(u_strip) = S.f  in int(S.Gamma) \ int(S.Gamma1),
+%           u_strip = 0    on S.Gamma + S.Gamma1,
 %
-%   where bc_strip contains the values of bc on S.Gamma and S.Gamma1.
+%   where du_strip contains the values of the normal derivative of u on
+%   S.Gamma and S.Gamma1.
 
-% This will call treefun2/feval
-bc_strip = bc(S.strip_solver.patches{1}.xy(:,1), S.strip_solver.patches{1}.xy(:,2));
-u_strip = S.strip_solver \ bc_strip;
+[u_strip, du_strip] = S.strip_solver.solve(S.f);
 
 end
 
-function [u_glue_i, u_glue_e] = solveGlue(S, u_bulk, bc_strip)
+function u_glue = solveGlue(S, u_bulk, du_strip)
 %SOLVEGLUE   Solve the Neumann glue problem.
-%   [u_glue_i, u_glue_e] = SOLVEGLUE(S, u_bulk, bc_strip) computes
-%   functions u_glue_i and u_glue_e such that
+%   u_glue = SOLVEGLUE(S, u_bulk, bc_strip) computes functions u_glue.int
+%   and u_glue.ext such that
 %
-%         lap(u_glue_i/e) = 0                             in int/ext(S.Gamma1),
-%            [u_glue_i/e] = 0                             on S.Gamma1,
-%      [d(u_glue_i/e)/dn] = d(u_strip)/dn - d(u_bulk)/dn  on S.Gamma1,
+%         lap(u_glue.int/ext) = 0                             in int/ext(S.Gamma1),
+%            [u_glue.int/ext] = u_bulk - u_strip              on S.Gamma1,
+%      [d(u_glue.int/ext)/dn] = d(u_bulk)/dn - d(u_strip)/dn  on S.Gamma1,
 %
 %   where d/dn denotes the outward normal derivative on S.Gamma1.
 
-% Normal derivative of u_bulk
-u_bulk_dn = feval(diff(u_bulk, 1, 2), S.gam1x, S.gam1y) .* S.gam1_nx(:,1) + ...
-            feval(diff(u_bulk, 1, 1), S.gam1x, S.gam1y) .* S.gam1_nx(:,2);
+% Value and normal derivative of u_bulk
+u_bulk_dir = feval (u_bulk, S.gam1x, S.gam1y);
+[dx, dy]   = fevald(u_bulk, S.gam1x, S.gam1y);
+u_bulk_neu = dx.*S.gam1_nx(:,1) + dy.*S.gam1_nx(:,2);
 
-% Normal derivative of u_strip
-u_strip_dn = S.strip_solver.patches{1}.D2N * [bc_strip ; 1];
-u_strip_dn = strip2leg(S, u_strip_dn, 'inner');
+% Value and normal derivative of u_strip
+% (Note: u_strip_dir is zero)
+u_strip_neu = strip2leg(S, du_strip, 'inner');
 
-% Neumann jump across Gamma'
-neu_jump = -(u_strip_dn + u_bulk_dn);
+% Dirichlet and Neumann jumps across Gamma'
+dir_jump = u_bulk_dir;
+neu_jump = u_bulk_neu - u_strip_neu;
 
-% Correct with single-layer potential
-u_glue_i = @(x,y) kernels.laplace.slp(S.Gamma1, 'density', neu_jump, 'target', [x y], 'closeeval', true, 'side', 'i');
-u_glue_e = @(x,y) kernels.laplace.slp(S.Gamma1, 'density', neu_jump, 'target', [x y], 'closeeval', true, 'side', 'e');
+% Correct jumps with layer potentials
+u_glue = struct();
+u_glue.int = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'i') + ...
+                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'i');
+u_glue.ext = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'e') + ...
+                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'e');
 
 end
 
-function u_bc = solveBC(S, bc, bc_strip, bc_glue)
+function u_bc = solveBC(S, bc, bc_glue, opts)
 %SOLVEBC   Solve the boundary correction problem.
 %   u_bc = SOLVEBC(S, bc, bc_strip, bc_glue) computes a function u_bc such
 %   that
@@ -84,40 +107,39 @@ function u_bc = solveBC(S, bc, bc_strip, bc_glue)
 %      lap(u_bc) = 0                        in S.domain \ S.Gamma,
 %           u_bc = bc - bc_strip - bc_glue  on S.Gamma.
 
-% Compute the boundary value to correct by
-bc_strip = strip2leg(S, bc_strip, 'outer');
-bc_corr = bc(S.gamx_re, S.gamy_re) - bc_strip - bc_glue(S.gamx_re, S.gamy_re);
+% Compute the boundary value to correct by:
+bc_corr = bc(S.gamx_re, S.gamy_re) - bc_glue(S.gamx_re, S.gamy_re);
 
-% Solve for double-layer density corresponding to the boundary correction
-K = kernels.laplace.dlp(S.Gamma_re);
-I = eye(S.n_re * S.Gamma_re.np);
-sigma = (K - I/2) \ bc_corr;
-% sigma = gmres(K - I/2, bc_corr, [], 1e-14, 50);
+% Should we use the original boundary or the resampled boundary?
+if ( opts.useResampledCurve )
+    Gamma = S.Gamma_re;
+else
+    Gamma = S.Gamma;
+    bc_corr = resample(bc_corr, S.n_re, S.n, S.Gamma.np);
+end
 
-% Correct with double-layer potential
-u_bc = @(x,y) kernels.laplace.dlp(S.Gamma_re, 'density', sigma, 'target', [x y], 'closeeval', true, 'side', 'i');
+L = LaplaceSolver(Gamma, side='interior', bc='dirichlet', method='fmm');
+u_bc = L \ bc_corr;
 
 end
 
-%%% Utilities
+%% Utilities
+
 function bc = strip2leg(S, bc, side)
-
-outerIdx = false(size(S.strip_solver.patches{1}.xy, 1), 1);
-outerIdx((1:S.n_sem-2).' + (S.n_sem-2)*(0:2:2*length(S.strip_dom)-1)) = true;
-innerIdx = ~outerIdx;
-
-switch lower(side)
-    case 'inner'
-        bc = bc(innerIdx);
-    case 'outer'
-        bc = bc(outerIdx);
+    switch lower(side)
+        case 'inner'
+            bc = bc(:,:,1);
+        case 'outer'
+            bc = bc(:,:,2);
+    end
+    x_re = legpts(S.n_re);
+    bc = bary(x_re, bc);
+    bc = bc(:);
 end
 
-bc = reshape(bc, S.n_sem-2, length(S.strip_dom));
-% bc = util.modchebvals2legvals(bc);
-bc = util.modchebvals2chebvals(bc);
-x_re = legpts(S.n_re);
-bc = bary(x_re, bc);
-bc = bc(:);
-
+function bc_re = resample(bc, m, n, np)
+    x = legpts(n);
+    [xk, ~, vk] = legpts(m);
+    bc_re = bary(x, reshape(bc, m, np), xk, vk);
+    bc_re = bc_re(:);
 end
