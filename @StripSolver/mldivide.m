@@ -1,5 +1,5 @@
 function varargout = mldivide(varargin)
-%MLDIVIDE   Perform a strip solve.
+%MLDIVIDE   Solve a strip problem.
 %   MLDIVIDE is a shorthand for SOLVE().
 %
 %   See also SOLVE.
