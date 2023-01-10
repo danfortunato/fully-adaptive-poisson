@@ -1,8 +1,54 @@
+function [x, w, breaks] = quadrature(N, rule, np, resfun)
+%QUADRATURE   Quadrature rule on [0, 2pi].
+
+if ( nargin < 3 )
+    np = 1;
+    if ( nargin < 2 )
+        rule = 'ptr';
+    end
+end
+
+switch rule
+    case 'ptr'
+        x{1} = 2*pi/N*(0:N-1).';
+        w{1} = 2*pi/N*ones(N,1);
+        breaks = [0 2*pi];
+    case 'panel'
+        if ( strcmp(np, 'auto') )
+            % Adaptive panels
+            if ( isa(resfun{1}, 'chebfun') )
+                dom = domain(resfun{1});
+                a = dom(1);
+                b = dom(end);
+            else
+                a = 0;
+                b = 2*pi;
+            end
+            breaks = split(resfun, a, b, N);
+        else
+            % Uniform panels
+            breaks = 2*pi*(0:np)/np;
+        end
+        [x01, w01] = util.gauss(N, 0, 1);
+        np = numel(breaks)-1;
+        x = cell(np,1);
+        w = cell(np,1);
+        for k = 1:np
+            x{k} = (breaks(k+1)-breaks(k))*x01 + breaks(k);
+            w{k} = (breaks(k+1)-breaks(k))*w01;
+        end
+    otherwise
+        error('Unknown quadrature rule.');
+end
+
+end
+
+%%
 function t = split(f, a, b, N, tol)
 %SPLIT   Adaptively split interval [a,b] according to function(s).
 
 if ( nargin < 5 )
-    tol = 1e-2;
+    tol = 1e-12;
     %tol = 10.^(1-N);
 end
 
@@ -15,8 +61,8 @@ resolved = isResolvedCoeffs(f, a, b, N, tol);
 bent = isBent(f, a, b, N, tol);
 if ( ~resolved || bent )
 %if ( ~resolved )
-    t1 = util.split(f, a, (a+b)/2, N, tol);
-    t2 = util.split(f, (a+b)/2, b, N, tol);
+    t1 = split(f, a, (a+b)/2, N, tol);
+    t2 = split(f, (a+b)/2, b, N, tol);
     t = unique([a t1 t2 b]);
 else
     t = [a b];
@@ -28,8 +74,8 @@ end
 %     % Check resolution of function f{k}
 %     resolved = isResolved(f{k}, a, b, N, tol);
 %     if ( ~resolved )
-%         t1 = util.split(f(k), a, (a+b)/2, N, tol);
-%         t2 = util.split(f(k), (a+b)/2, b, N, tol);
+%         t1 = split(f(k), a, (a+b)/2, N, tol);
+%         t2 = split(f(k), (a+b)/2, b, N, tol);
 %         t = unique([a t1 t2 b]);
 %     else
 %         t = [a b];

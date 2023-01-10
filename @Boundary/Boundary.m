@@ -94,7 +94,7 @@ classdef Boundary
                     obj.breaks = quadinfo.breaks;
                 else
                     % Compute quadrature info
-                    [s, w, obj.breaks] = util.quadrature(obj.N, obj.rule, obj.np);
+                    [s, w, obj.breaks] = Boundary.quadrature(obj.N, obj.rule, obj.np);
                 end
 
                 obj.s = s;
@@ -194,11 +194,8 @@ classdef Boundary
 %                     split = inhalf;
 %                 end
                 obj.bend = @(t) abs(imag(obj.dff(t)./obj.df(t))).^2 ./ abs(obj.df(t));
-                [s, w, obj.breaks] = util.quadrature(obj.N, obj.rule, p.Results.panels, ...
+                [s, w, obj.breaks] = Boundary.quadrature(obj.N, obj.rule, p.Results.panels, ...
                     {obj.f, @(t) abs(obj.df(t)), @(t) obj.df(t)./abs(obj.df(t)), obj.bend});
-                %[s, w, obj.breaks] = util.quadrature(obj.N, obj.rule, p.Results.panels, ...
-                %  {obj.f, @(t) abs(obj.df(t)), obj.dff});
-                %[s, w, obj.breaks] = util.quadrature(obj.N, obj.rule, p.Results.panels, {obj.f});
 
                 np = size(s,1);
                 obj.x         = cell(np,1);
@@ -283,6 +280,7 @@ classdef Boundary
         C = larrycup(N, varargin);
         C = bleb(N, varargin);
 
+        varargout = quadrature(varargin);
         C = fromChunker(chnkr);
         chnkr = toChunker(C);
 
