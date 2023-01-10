@@ -4,12 +4,6 @@
 [submodule "external/kdtree"]
 	path = external/kdtree
 	url = https://github.com/taiya/kdtree.git
-[submodule "external/BIE2D"]
-	path = external/BIE2D
-	url = https://github.com/ahbarnett/BIE2D.git
-[submodule "external/linequad"]
-	path = external/linequad
-	url = https://github.com/ludvigak/linequad.git
 [submodule "external/treefun"]
 	path = external/treefun
 	url = https://github.com/danfortunato/treefun.git
