@@ -177,6 +177,7 @@ classdef Boundary
                 addRequired(p, 'levelset', @(f) isa(f, 'function_handle') || isa(f, 'chebfun2') || isempty(f));
                 addParameter(p, 'quadrature', 'ptr', checkquad);
                 addParameter(p, 'panels', 'auto', checkpanels);
+                addParameter(p, 'tol', 1e-11, @(tol) isnumeric(tol));
                 parse(p, varargin{:});
 
                 obj.N = p.Results.N;
@@ -195,7 +196,8 @@ classdef Boundary
 %                 end
                 obj.bend = @(t) abs(imag(obj.dff(t)./obj.df(t))).^2 ./ abs(obj.df(t));
                 [s, w, obj.breaks] = Boundary.quadrature(obj.N, obj.rule, p.Results.panels, ...
-                    {obj.f, @(t) abs(obj.df(t)), @(t) obj.df(t)./abs(obj.df(t)), obj.bend});
+                    {obj.f, @(t) abs(obj.df(t)), @(t) obj.df(t)./abs(obj.df(t)), obj.bend}, ...
+                    p.Results.tol);
 
                 np = size(s,1);
                 obj.x         = cell(np,1);

@@ -1,11 +1,16 @@
-function [x, w, breaks] = quadrature(N, rule, np, resfun)
+function [x, w, breaks] = quadrature(N, rule, np, resfun, tol)
 %QUADRATURE   Quadrature rule on [0, 2pi].
+
+if ( nargin < 2 )
+    rule = 'ptr';
+end
 
 if ( nargin < 3 )
     np = 1;
-    if ( nargin < 2 )
-        rule = 'ptr';
-    end
+end
+
+if ( nargin < 5 )
+    tol = 1e-11;
 end
 
 switch rule
@@ -24,7 +29,7 @@ switch rule
                 a = 0;
                 b = 2*pi;
             end
-            breaks = split(resfun, a, b, N);
+            breaks = split(resfun, a, b, N, tol);
         else
             % Uniform panels
             breaks = 2*pi*(0:np)/np;
@@ -48,7 +53,7 @@ function t = split(f, a, b, N, tol)
 %SPLIT   Adaptively split interval [a,b] according to function(s).
 
 if ( nargin < 5 )
-    tol = 1e-12;
+    tol = 1e-11;
     %tol = 10.^(1-N);
 end
 
