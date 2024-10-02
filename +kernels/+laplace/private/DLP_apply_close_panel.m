@@ -1,7 +1,11 @@
-function u = DLP_apply_close_panel(source, sigma, side)
+function u = DLP_apply_close_panel(source, sigma, side, tol)
+
+if ( nargin < 4 )
+    tol = eps;
+end
 
 target = cell2mat(source.x);
-u = FMM_eval(source, target, 'dipstr', sigma);
+u = FMM_eval(source, target, 'dipstr', sigma, 'tol', tol);
 
 n = source.N;
 closepan = 1.2;

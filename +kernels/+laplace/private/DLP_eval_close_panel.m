@@ -1,7 +1,9 @@
-function u = DLP_eval_close_panel(source, target, sigma, side)
 
-u = FMM_eval(source, target, 'dipstr', sigma);
-%u=0;
+if ( nargin < 5 )
+    tol = eps;
+end
+
+u = FMM_eval(source, target, 'dipstr', sigma, 'tol', tol);
 
 n = source.N;
 closepan = 1.2;

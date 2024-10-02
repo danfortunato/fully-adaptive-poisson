@@ -9,12 +9,14 @@ addParameter(p, 'density',   [],    @isnumeric);
 addParameter(p, 'modified',  false, @islogical);
 addParameter(p, 'closeeval', false, @islogical);
 addParameter(p, 'side',      [],    @(s) any(strcmp(s,{'i','e'})) || isempty(s));
+addParameter(p, 'tol',       eps,   @isscalar);
 parse(p, source, varargin{:});
 target    = p.Results.target;
 density   = p.Results.density;
 modified  = p.Results.modified;
 closeeval = p.Results.closeeval;
 side      = p.Results.side;
+tol       = p.Results.tol;
 
 if ( ~isreal(target) )
     target = [real(target(:)) imag(target(:))];
@@ -48,11 +50,11 @@ elseif ( ~isempty(density) )
         if ( strcmpi(source.rule, 'ptr') )
             u = DLP_eval_close_global(source, target, density, side);
         elseif ( strcmpi(source.rule, 'panel') )
-            u = DLP_eval_close_panel(source, target, density, side);
+            u = DLP_eval_close_panel(source, target, density, side, tol);
         end
     else
         % Use FMM
-        u = FMM_eval(source, target, 'dipstr', density);
+        u = FMM_eval(source, target, 'dipstr', density, 'tol', tol);
     end
     % Correction for modified DLP
     if ( modified )

@@ -1,4 +1,8 @@
-function D = FMM_eval_nystrom(source)
+function D = FMM_eval_nystrom(source, tol)
+
+if ( nargin < 2 )
+    tol = eps;
+end
 
 n = source.N;
 np = source.np;
@@ -9,7 +13,7 @@ density = zeros(n*np, 1);
 
 for k = 1:n*np
     density(k) = 1;
-    D(:,k) = FMM_eval(source, target, 'dipstr', density);
+    D(:,k) = FMM_eval(source, target, 'dipstr', density, 'tol', tol);
     density(k) = 0;
 end
 

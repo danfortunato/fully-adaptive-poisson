@@ -30,8 +30,6 @@ else
     iprec = 5;
 end
 
-iprec = 5;
-
 nsource = source.N * source.np;
 x = cell2mat(source.x).';
 y = target.';

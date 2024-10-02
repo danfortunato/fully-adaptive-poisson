@@ -1,6 +1,10 @@
-function u = SLP_eval_close_panel(source, target, sigma, side)
+function u = SLP_eval_close_panel(source, target, sigma, side, tol)
 
-u = FMM_eval(source, target, 'charge', sigma);
+if ( nargin < 5 )
+    tol = eps;
+end
+
+u = FMM_eval(source, target, 'charge', sigma, 'tol', tol);
 
 n = source.N;
 closepan = 1;

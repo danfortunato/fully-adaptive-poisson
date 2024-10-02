@@ -8,6 +8,7 @@ classdef LaplaceSolver
         bc
         method
         n
+        tol
     end
 
     methods
@@ -19,11 +20,13 @@ classdef LaplaceSolver
                 opts.side   (1,:) char {mustBeMember(opts.side, {'interior', 'exterior'})} = 'interior'
                 opts.bc     (1,:) char {mustBeMember(opts.bc, {'dirichlet', 'neumann'})}   = 'dirichlet'
                 opts.method (1,:) char {mustBeMember(opts.method, {'direct', 'fmm'})}      = 'fmm'
+                opts.tol    (1,:) double {mustBeNumeric} = 1e-12
             end
 
             L.side   = opts.side;
             L.bc     = opts.bc;
             L.method = opts.method;
+            L.tol    = opts.tol;
 
             if ( strcmpi(L.side, 'interior') && strcmpi(L.bc, 'dirichlet') )
                 c = -1/2;
@@ -58,7 +61,7 @@ classdef LaplaceSolver
                 K_smooth = kernels.laplace.(op)(Gamma, modified=modified);
                 L.op = c*I + K_corr + K_smooth;
             else
-                K_smooth = @(sigma) kernels.laplace.([op '_apply'])(Gamma, sigma, modified=modified);
+                K_smooth = @(sigma) kernels.laplace.([op '_apply'])(Gamma, sigma, modified=modified, tol=L.tol);
                 L.op = @(sigma) c*sigma + K_corr*sigma + K_smooth(sigma);
             end
 
@@ -67,7 +70,8 @@ classdef LaplaceSolver
                 density=sigma, ...
                 modified=modified, ...
                 target=[x(:) y(:)], ...
-                closeeval=true ...
+                closeeval=true, ...
+                tol=L.tol ...
             );
 
         end

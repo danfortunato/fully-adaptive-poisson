@@ -13,6 +13,7 @@ function u = solve(S, bc, opts)
 defaults = [];
 defaults.debug = true;
 defaults.useResampledCurve = false;
+defaults.tol = S.opts.tol;
 
 if ( nargin < 3 )
     opts = defaults;
@@ -24,7 +25,7 @@ end
 u = struct();
 
 Timer.tic();
-u.bulk = solveBulk(S);
+u.bulk = solveBulk(S, opts);
 Timer.toc('Box code');
 
 Timer.tic();
@@ -32,7 +33,7 @@ Timer.tic();
 Timer.toc('Strip solve');
 
 Timer.tic();
-u.glue = solveGlue(S, u.bulk, du_strip);
+u.glue = solveGlue(S, u.bulk, du_strip, opts);
 Timer.toc('Glue correction');
 
 Timer.tic();
@@ -41,7 +42,6 @@ Timer.toc('Boundary solve');
 
 end
 
-function u_bulk = solveBulk(S)
 %SOLVEBULK   Solve the bulk problem.
 %   u_bulk = SOLVEBULK(S) computes a function u_bulk such that
 %
@@ -66,7 +66,7 @@ function [u_strip, du_strip] = solveStrip(S)
 
 end
 
-function u_glue = solveGlue(S, u_bulk, du_strip)
+function u_glue = solveGlue(S, u_bulk, du_strip, opts)
 %SOLVEGLUE   Solve the Neumann glue problem.
 %   u_glue = SOLVEGLUE(S, u_bulk, bc_strip) computes functions u_glue.int
 %   and u_glue.ext such that
@@ -91,11 +91,12 @@ dir_jump = u_bulk_dir;
 neu_jump = u_bulk_neu + u_strip_neu; % This is + since normal vectors oppose each other
 
 % Correct jumps with layer potentials
+tol = opts.tol;
 u_glue = struct();
-u_glue.int = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'i') + ...
-                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'i');
-u_glue.ext = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'e') + ...
-                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'e');
+u_glue.int = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'i', 'tol', tol) + ...
+                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'i', 'tol', tol);
+u_glue.ext = @(x,y) kernels.laplace.dlp(S.Gamma1, 'density',  dir_jump, 'target', [x y], 'closeeval', true, 'side', 'e', 'tol', tol) + ...
+                    kernels.laplace.slp(S.Gamma1, 'density', -neu_jump, 'target', [x y], 'closeeval', true, 'side', 'e', 'tol', tol);
 
 end
 
@@ -118,7 +119,7 @@ else
     bc_corr = resample(bc_corr, S.n_re, S.n, S.Gamma.np);
 end
 
-L = LaplaceSolver(Gamma, side='interior', bc='dirichlet', method='fmm');
+L = LaplaceSolver(Gamma, side='interior', bc='dirichlet', method='fmm', tol=opts.tol);
 u_bc = L \ bc_corr;
 
 end

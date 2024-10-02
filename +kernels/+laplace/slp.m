@@ -10,11 +10,13 @@ addParameter(p, 'target',    [],    @isnumeric);
 addParameter(p, 'density',   [],    @isnumeric);
 addParameter(p, 'closeeval', false, @islogical);
 addParameter(p, 'side',      [],    @(s) any(strcmp(s,{'i','e'})) || isempty(s));
+addParameter(p, 'tol',       eps,   @isscalar);
 parse(p, source, varargin{:});
 target    = p.Results.target;
 density   = p.Results.density;
 closeeval = p.Results.closeeval;
 side      = p.Results.side;
+tol       = p.Results.tol;
 
 if ( ~isreal(target) )
     target = [real(target(:)) imag(target(:))];
@@ -44,7 +46,7 @@ elseif ( ~isempty(density) )
         if ( strcmpi(source.rule, 'ptr') )
             u = SLP_eval_close_global(source, target, density, side);
         elseif ( strcmpi(source.rule, 'panel') )
-            u = SLP_eval_close_panel(source, target, density, side);
+            u = SLP_eval_close_panel(source, target, density, side, tol);
             %error('SLP panel-based close evaluation is not implemented.');
         end
     else
@@ -56,7 +58,7 @@ elseif ( ~isempty(density) )
 %                     u = bsxfun(@times, log(abs(d)), -(1/2/pi)*w(:)');  % prefactor & wei
 %                     u = u * density;
         % Use FMM
-        u = FMM_eval(source, target, 'charge', density);
+        u = FMM_eval(source, target, 'charge', density, 'tol', tol);
     end
 end
 
