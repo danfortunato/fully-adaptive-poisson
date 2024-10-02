@@ -88,7 +88,7 @@ u_strip_neu = strip2leg(S, du_strip, 'inner');
 
 % Dirichlet and Neumann jumps across Gamma'
 dir_jump = u_bulk_dir;
-neu_jump = u_bulk_neu - u_strip_neu;
+neu_jump = u_bulk_neu + u_strip_neu; % This is + since normal vectors oppose each other
 
 % Correct jumps with layer potentials
 u_glue = struct();

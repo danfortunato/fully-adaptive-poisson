@@ -79,8 +79,8 @@ for k = 1:numPatches
     Sk = [tmpS(:,1:end-1) * S2L, tmpS(:,end)];
 
     [nl, nr, nd, nu] = normals(x, y);
-    nl = -By * nl;
-    nr = -By * nr;
+    nl = By * nl;
+    nr = By * nr;
 
     % Construct the D2N map:
     dx = L2S * Dx(ee,:) * Sk;
@@ -196,13 +196,13 @@ end
 % Compute the Jacobian:
 dxdt = x * Dt.'; dxdr = Dr * x;
 dydt = y * Dt.'; dydr = Dr * y;
-J = -(dxdr.*dydt - dxdt.*dydr);
+J = dxdt.*dydr - dxdr.*dydt;
 
 % Compute d[t,r]/d[x,y] as the inverse of the Jacobian:
-dtdx = -dydr ./ J;
-dtdy =  dxdr ./ J;
-drdx =  dydt ./ J;
-drdy = -dxdt ./ J;
+dtdx =  dydr ./ J;
+dtdy = -dxdr ./ J;
+drdx = -dydt ./ J;
+drdy =  dxdt ./ J;
 
 % Construct operators:
 Dx = dtdx(:).*Dt2d + drdx(:).*Dr2d;
