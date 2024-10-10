@@ -1,4 +1,4 @@
-function [x, w, breaks] = quadrature(N, rule, np, resfun, tol)
+function [x, w, breaks] = quadrature(N, rule, np, resfun, tol, useValues)
 %QUADRATURE   Quadrature rule on [0, 2pi].
 
 if ( nargin < 2 )
@@ -10,7 +10,11 @@ if ( nargin < 3 )
 end
 
 if ( nargin < 5 )
-    tol = 1e-11;
+    tol = 1e-10;
+end
+
+if ( nargin < 6 )
+    useValues = false;
 end
 
 switch rule
@@ -29,7 +33,7 @@ switch rule
                 a = 0;
                 b = 2*pi;
             end
-            breaks = split(resfun, a, b, N, tol);
+            breaks = split(resfun, a, b, N, tol, useValues);
         else
             % Uniform panels
             breaks = 2*pi*(0:np)/np;
@@ -49,7 +53,7 @@ end
 end
 
 %%
-function t = split(f, a, b, N, tol)
+function t = split(f, a, b, N, tol, useValues)
 %SPLIT   Adaptively split interval [a,b] according to function(s).
 
 if ( nargin < 5 )
@@ -57,12 +61,19 @@ if ( nargin < 5 )
     %tol = 10.^(1-N);
 end
 
+if ( nargin < 6 )
+    useValues = false;
+end
+
 if ( isa(f, 'function_handle') || isa(f, 'chebfun') )
     f = {f};
 end
 
-%resolved = isResolved(f, a, b, N, tol);
-resolved = isResolvedCoeffs(f, a, b, N, tol);
+if ( useValues )
+    resolved = isResolved(f, a, b, N, tol);
+else
+    resolved = isResolvedCoeffs(f, a, b, N, tol);
+end
 bent = isBent(f, a, b, N, tol);
 if ( ~resolved || bent )
 %if ( ~resolved )
@@ -117,8 +128,6 @@ err = tvals - R * vals;
 relerr = err ./ sum(abs(tvals));
 resolved = min(norm(relerr,inf), norm(err,inf)) < 10*M*max(1e-14, tol)/(b-a);
 
-min(norm(relerr,inf), norm(err,inf))
-
 if ( (b-a) > 0.1 || abs(f{1}(b)-f{1}(a)) > pi/8 )
     resolved = false;
 end
@@ -172,12 +181,18 @@ coeffs = V2C * vals;
 
 errs0 = sum(coeffs(1:N,:).^2,1);
 errs = sum(coeffs(N+1:2*N,:).^2,1);
+errs0(errs0 < tol) = 1;
 rmsemax = max(sqrt(errs./errs0/N));
 resolved = ( rmsemax < tol );
 
 end
 
 function bent = isBent(f, a, b, N, tol)
+
+if ( abs(b-a) < tol )
+    bent = false;
+    return
+end
 
 [pts, w, D] = util.gauss(N, a, b);
 zp  = D   * f{1}(pts);
