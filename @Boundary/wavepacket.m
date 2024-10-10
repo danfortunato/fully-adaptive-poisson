@@ -3,13 +3,13 @@ function C = wavepacket(N, varargin)
 p = inputParser;
 p.KeepUnmatched = true;
 addRequired(p, 'N', @isfloat);
+addParameter(p, 'w', 200, @isfloat);
+addParameter(p, 'k', 10, @isfloat);
+addParameter(p, 'amp', 1, @isfloat);
 parse(p, N, varargin{:});
-
-w = 1e5;
-%w = 2000;
-%k = 1.5;
-k = 10;
-amp = 2;
+w   = p.Results.w;
+k   = p.Results.k;
+amp = p.Results.amp;
 
 syms x
 packet_f = @(x) amp/sqrt(w) * cos(k*sqrt(w)*x) .* exp(-w*x.^2);
