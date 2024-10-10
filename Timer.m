@@ -29,7 +29,7 @@ classdef Timer < handle
             timer.event(end+1) = e;
         end
 
-        function toc(message)
+        function t = toc(message)
             timer = Timer();
 
             if ( isempty(timer.event) )
@@ -46,6 +46,7 @@ classdef Timer < handle
                 timer.next_id = 0;
                 Timer.print();
             end
+            t = e.toc;
         end
 
         function log(message)
