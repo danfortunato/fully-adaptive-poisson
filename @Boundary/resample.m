@@ -24,6 +24,7 @@ for k = 1:dom.np
     dom.dzz{k}       = bary(x, dom.dzz{k}, xk, vk);
     dom.s{k}         = bary(x, dom.s{k}, xk, vk);
     dom.speed{k}     = bary(x, dom.speed{k}, xk, vk);
+    dom.accel{k}     = bary(x, dom.accel{k}, xk, vk);
     dom.normal{k}    = bary(x, dom.normal{k}, xk, vk);
     dom.curvature{k} = bary(x, dom.curvature{k}, xk, vk);
     wk = (dom.breaks(k+1)-dom.breaks(k))/2 * w;
