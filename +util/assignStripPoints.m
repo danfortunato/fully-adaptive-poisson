@@ -21,6 +21,7 @@ for k = 1:length(dom)
            min(dom(k).y(:))-1e-12 max(dom(k).y(:))+1e-12];
     testIdx = kd.range(box);
     %[tt, rr, converged] = cart2curv_element(xfun, yfun, xx_s(testIdx), yy_s(testIdx), [0 0]);
+    %[tt2, rr2, found_k2] = cart2curv(xfun, yfun, xx_s(testIdx), yy_s(testIdx), [0 0]);
     nx = gam_nx_cheb{k}(:,1);
     ny = gam_nx_cheb{k}(:,2);
     [tt, rr, found_k] = getElemCoordinates(xx_s(testIdx), yy_s(testIdx), ...
