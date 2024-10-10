@@ -1,10 +1,23 @@
 images/
+notes/
+data/
+paper-figures/
+
+# Data files
+*.tmp
+*.mat
+
+# Figures
+*.png
+*.eps
+*.fig
 
 # Mac OS files
 .DS_Store?
 
 # Matlab autosaves
 *.~
+*.m~
 *.asv
 
 # Matlab MEX
