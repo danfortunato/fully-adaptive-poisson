@@ -301,7 +301,7 @@ while ( id <= nboxes )
 
     id = id + nblev;
 
-    if ( nboxes > 100000 )
+    if ( nboxes > maxBoxes )
         warning('Number of boxes has exceeded %d.', maxBoxes);
         keyboard
     end
