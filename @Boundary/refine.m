@@ -30,7 +30,7 @@ end
 
 newdom.np = dom.np + length(ids);
 newdom.breaks = zeros(1, newdom.np+1);
-needToRefine = false(dom.np);
+needToRefine = false(dom.np, 1);
 needToRefine(ids) = true;
 j = 1;
 for k = 1:dom.np
@@ -69,9 +69,9 @@ newdom.zbreaks = newdom.f(newdom.breaks(:)).';
 %newdom.polygon = polyshape(nodes(:,1), nodes(:,2));
 %warning(warnstate);
 
-nodes = cell2mat(dom.x);
+nodes = cell2mat(newdom.x);
 npts = size(nodes, 1);
-dom.polynodes = nodes;
-dom.polyedges = [1:npts ; 2:npts 1].';
+newdom.polynodes = nodes;
+newdom.polyedges = [1:npts ; 2:npts 1].';
 
 end
