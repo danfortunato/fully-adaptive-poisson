@@ -14,7 +14,7 @@ switch lower(type)
         x = dpss(n, w/2, 1);
         bump = chebfun(x, 'equi');
     case 'gaussian'
-        bump = chebfun(@(x) exp(-w*x.^2/2));
+        bump = chebfun(@(x) exp(-w*x.^2));
     otherwise
         error('Unknown blending function.');
 end
