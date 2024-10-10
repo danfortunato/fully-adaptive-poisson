@@ -7,42 +7,42 @@ double norm(double x, double y)
     return std::sqrt(x*x + y*y);
 }
 
-template<int N>
-double bary_vec(double x, const double fk[N], const double xk[N], const double vk[N])
-{
-    sctl::Vec<double,sctl::DefaultVecLen<double>()> x_vec(x);
-    auto val_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::Zero();
-    auto sum_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::Zero();
-    for (int i=0; i<N; i+=sctl::DefaultVecLen<double>()) {
-        auto xk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&xk[i]);
-        auto vk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&vk[i]);
-        auto fk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&fk[i]);
-        sctl::Vec<double,sctl::DefaultVecLen<double>()> x_xk = x_vec - xk_vec;
-        sctl::Vec<double,sctl::DefaultVecLen<double>()> xx = vk_vec * x_xk * sctl::approx_rsqrt<10,sctl::Vec<double,sctl::DefaultVecLen<double>()>>(x_xk*x_xk*x_xk*x_xk);//vk_vec / (x_vec - xk_vec);
-        val_vec += xx * fk_vec;
-        sum_vec += xx;
-    }
+// template<int N>
+// double bary_vec(double x, const double fk[N], const double xk[N], const double vk[N])
+// {
+//     sctl::Vec<double,sctl::DefaultVecLen<double>()> x_vec(x);
+//     auto val_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::Zero();
+//     auto sum_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::Zero();
+//     for (int i=0; i<N; i+=sctl::DefaultVecLen<double>()) {
+//         auto xk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&xk[i]);
+//         auto vk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&vk[i]);
+//         auto fk_vec = sctl::Vec<double,sctl::DefaultVecLen<double>()>::LoadAligned(&fk[i]);
+//         sctl::Vec<double,sctl::DefaultVecLen<double>()> x_xk = x_vec - xk_vec;
+//         sctl::Vec<double,sctl::DefaultVecLen<double>()> xx = vk_vec * x_xk * sctl::approx_rsqrt<10,sctl::Vec<double,sctl::DefaultVecLen<double>()>>(x_xk*x_xk*x_xk*x_xk);//vk_vec / (x_vec - xk_vec);
+//         val_vec += xx * fk_vec;
+//         sum_vec += xx;
+//     }
 
-    // Sum the partial sums
-    double val = 0;
-    double sum = 0;
-    for (int i=0; i<sctl::DefaultVecLen<double>(); ++i) {
-        val += val_vec[i];
-        sum += sum_vec[i];
-    }
-    val /= sum;
+//     // Sum the partial sums
+//     double val = 0;
+//     double sum = 0;
+//     for (int i=0; i<sctl::DefaultVecLen<double>(); ++i) {
+//         val += val_vec[i];
+//         sum += sum_vec[i];
+//     }
+//     val /= sum;
 
-    // Clean up NaN values
-    if (std::isnan(val)) {
-        for (int i=0; i<N; ++i) {
-            if (x == xk[i]) {
-                return fk[i];
-            }
-        }
-    }
+//     // Clean up NaN values
+//     if (std::isnan(val)) {
+//         for (int i=0; i<N; ++i) {
+//             if (x == xk[i]) {
+//                 return fk[i];
+//             }
+//         }
+//     }
 
-    return val;
-}
+//     return val;
+// }
 
 template<int N>
 double bary(double x, const double fk[N], const double xk[N], const double vk[N])
@@ -77,9 +77,10 @@ void getElemCoordinates(int npts, int nthreads,
                         const double *xcheb, const double *vcheb,
                         double *t, double *r, int *found)
 {
-    double tol = 1e-14;
-    double perpx = -ny[0];
-    double perpy =  nx[0];
+    double tol = 1e-11;
+    int idx = N/2;
+    double perpx = -ny[idx];
+    double perpy =  nx[idx];
 
     double det[N];
     for (int i=0; i<N; ++i) {
@@ -121,13 +122,20 @@ void getElemCoordinates(int npts, int nthreads,
         double gam_qy  = bary<N>(t[i], gamy,  xcheb, vcheb);
         double gam1_qx = bary<N>(t[i], gam1x, xcheb, vcheb);
         double gam1_qy = bary<N>(t[i], gam1y, xcheb, vcheb);
-        gam_qx  = bary<N>(t[i], gamx,  xcheb, vcheb);
-        gam_qy  = bary<N>(t[i], gamy,  xcheb, vcheb);
-        gam1_qx = bary<N>(t[i], gam1x, xcheb, vcheb);
-        gam1_qy = bary<N>(t[i], gam1y, xcheb, vcheb);
+        // gam_qx  = bary<N>(t[i], gamx,  xcheb, vcheb);
+        // gam_qy  = bary<N>(t[i], gamy,  xcheb, vcheb);
+        // gam1_qx = bary<N>(t[i], gam1x, xcheb, vcheb);
+        // gam1_qy = bary<N>(t[i], gam1y, xcheb, vcheb);
 
-        // Compute radial coordinate and map to [0,1]
-        r[i] = 2*norm(qx-gam_qx, qy-gam_qy)/norm(gam1_qx-gam_qx, gam1_qy-gam_qy) - 1;
+        double norm_q_gam    = norm(qx-gam_qx, qy-gam_qy);
+        double norm_q_gam1   = norm(qx-gam1_qx, qy-gam1_qy);
+        double norm_gam_gam1 = norm(gam1_qx-gam_qx, gam1_qy-gam_qy);
+        if (norm_q_gam + norm_q_gam1 - norm_gam_gam1 > tol ) {
+            found[i] = 0;
+        } else {
+            // Compute radial coordinate and map to [-1,1]
+            r[i] = 2*norm_q_gam/norm_gam_gam1 - 1;
+        }
     }
 }
 

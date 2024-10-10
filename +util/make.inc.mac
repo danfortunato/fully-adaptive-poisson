@@ -1,4 +1,4 @@
-CXX      = g++-11
+CXX      = g++-13
 MEX      = mex
 MWRAP    = mwrap
 LIBS     = -lgomp

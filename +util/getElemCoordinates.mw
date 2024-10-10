@@ -37,6 +37,17 @@ found = logical(found);
 
 end
 
+function [t, r, found] = getElemCoordinates20(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads)
+
+npts = size(x, 1);
+t = zeros(npts, 1);
+r = zeros(npts, 1);
+found = zeros(npts, 1);
+# getElemCoordinates20(int npts, int nthreads, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+found = logical(found);
+
+end
+
 function [t, r, found] = getElemCoordinates24(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads)
 
 npts = size(x, 1);
