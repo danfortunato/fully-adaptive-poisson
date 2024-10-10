@@ -9,9 +9,8 @@ u = FMM_eval(source, target, 'dipstr', sigma, 'tol', tol);
 
 n = source.N;
 closepan = 1.2;
-%closepan = 2.5;
 
-nf = 2*n;
+nf = 32;
 sourcef = resample(source, nf);
 [x, ~, v] = legpts(n);
 xf = legpts(nf);
@@ -32,9 +31,17 @@ for k = 1:source.np
     pa.sp = source.speed{k};
     pa.w  = source.w{k};
     pa.wxp = source.cw{k};
-    
+
+    paf = struct();
+    paf.x  = sourcef.z{k};
+    paf.xp = sourcef.dz{k};
+    paf.nx = sourcef.normal{k}(:,1) + 1i*sourcef.normal{k}(:,2);
+    paf.sp = sourcef.speed{k};
+    paf.w  = sourcef.w{k};
+    paf.wxp = sourcef.cw{k};
+
     den = sigma((1:n)+(k-1)*n);
-    
+
     for j = 1:source.np
         if ( j == k ), continue, end
         aj = source.zbreaks(j);

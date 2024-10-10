@@ -1,3 +1,4 @@
+function u = DLP_eval_close_panel(source, target, sigma, side, tol)
 
 if ( nargin < 5 )
     tol = eps;
@@ -15,10 +16,7 @@ R = 5;
 
 kd = KDTree(target);
 
-%nf = 32;
 nf = 32;
-%nf = 2*n;
-%nf = 32;
 sourcef = resample(source, nf);
 [x, ~, v] = legpts(n);
 xf = legpts(nf);
@@ -67,8 +65,6 @@ for k = 1:source.np
 %     closeIdx = closeIdxFiltered;
 
     if ( any(closeIdx) )
-    %if ( any(closeIdx) && (k == 200 || k == 201) )
-    %if ( false )
         t = struct();
         t.x = Z(closeIdx);
         [~, idx] = min(abs(paf.x - t.x(:).'));

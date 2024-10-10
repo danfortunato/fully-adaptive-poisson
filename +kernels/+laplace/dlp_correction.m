@@ -15,9 +15,7 @@ z = cell2mat(source.z);
 kd = KDTree([real(z) imag(z)]);
 D_corr = spalloc(n*np, n*np, 3*n*np);
 
-%nf = 2*n;
 nf = 32;
-%nf = 16;
 sourcef = resample(source, nf);
 [x, ~, v] = legpts(n);
 xf = legpts(nf);
@@ -72,12 +70,9 @@ for k = 1:np
         D_close = D_close_i;
         D_close(sgn<0, :) = D_close_e(sgn<0, :);
 
-        D_close  = LapDLP_closepanel(t, paf, a, b, side);
         D_direct = LapDLP(t, pa);
-        D_close(isinf(D_direct)) = 0;
         D_direct(isinf(D_direct)) = 0;
         D_corr(closeIdx,selfIdx) = D_corr(closeIdx,selfIdx) + D_close*L - D_direct;
-        %D_corr(closeIdx,selfIdx) = D_corr(closeIdx,selfIdx) + D_close*L;
     end
 
 end
