@@ -285,9 +285,13 @@ classdef Boundary
         C = spiral(N, varargin);
         C = larrycup(N, varargin);
         C = bleb(N, varargin);
+        C = blob(N, varargin);
+        C = raindrop(N, varargin);
+        C = raindrop2(N, varargin);
 
         varargout = quadrature(varargin);
         C = fromChunker(chnkr);
+        C = fromChebfun(N, z, varargin);
         chnkr = toChunker(C);
 
     end
