@@ -12,6 +12,8 @@ for k = 1:Gamma.np
     chnkr.d(2,:,k) = Gamma.dx{k}(:,2);
     chnkr.d2(1,:,k) = Gamma.dxx{k}(:,1);
     chnkr.d2(2,:,k) = Gamma.dxx{k}(:,2);
+    chnkr.n(1,:,k) = Gamma.normal{k}(:,1);
+    chnkr.n(2,:,k) = Gamma.normal{k}(:,2);
     chnkr.h(k) = diff(Gamma.breaks([k k+1])) / 2;
     chnkr.adj(:,k) = [k-1 k+1];
 end
