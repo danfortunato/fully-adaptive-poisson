@@ -50,27 +50,30 @@ du_part = zeros(numSkelPts, numPatches);
 inner_d = zeros(nx, nx*ny, numPatches);
 outer_d = zeros(nx, nx*ny, numPatches);
 
+% Evaluate non-constant RHSs if required:
+if ( isa(rhs, 'function_handle') || isa(rhs, 'chebfun2') )
+    x = cat(3, dom.x);
+    y = cat(3, dom.y);
+    rhs_eval = feval(rhs, x(2:end-1,2:end-1,:), y(2:end-1,2:end-1,:));
+elseif ( iscell(rhs) )
+    rhs_eval = cat(3, rhs{:});
+else
+    rhs_eval = repmat(rhs(:), 1, numPatches);
+end
+rhs_eval = reshape(rhs_eval, numIntPts, numPatches);
+
 % Loop over each patch:
 for k = 1:numPatches
     % Define the left and right edges for this patch:
     domk = dom(k);
     x = domk.x;
     y = domk.y;
-
-    % Evaluate non-constant RHSs if required:
-    if ( isa(rhs, 'function_handle') || isa(rhs, 'chebfun2') )
-        rhs_eval = feval(rhs, x(ii), y(ii));
-    elseif ( iscell(rhs) )
-        rhs_eval = rhs{k};
-    else
-        rhs_eval = rhs;
-    end
     
     [Dx, Dy] = curvedDiffmat(x, y);
     A = Dx^2 + Dy^2;
 
     % Construct solution operator:
-    Sk = A(ii,ii) \ [-A(ii,ee) rhs_eval];
+    Sk = A(ii,ii) \ [-A(ii,ee) rhs_eval(:,k)];
 
     % Append boundary points to solution operator:
     tmpS = zeros(nx*ny, numBdyPts+1);
