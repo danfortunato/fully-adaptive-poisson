@@ -77,8 +77,8 @@ end
 bent = isBent(f, a, b, N, tol);
 if ( ~resolved || bent )
 %if ( ~resolved )
-    t1 = split(f, a, (a+b)/2, N, tol);
-    t2 = split(f, (a+b)/2, b, N, tol);
+    t1 = split(f, a, (a+b)/2, N, tol, useValues);
+    t2 = split(f, (a+b)/2, b, N, tol, useValues);
     t = unique([a t1 t2 b]);
 else
     t = [a b];
@@ -183,7 +183,8 @@ errs0 = sum(coeffs(1:N,:).^2,1);
 errs = sum(coeffs(N+1:2*N,:).^2,1);
 errs0(errs0 < tol) = 1;
 rmsemax = max(sqrt(errs./errs0/N));
-resolved = ( rmsemax < tol );
+resolved = ( 30*rmsemax < tol/(b-a) );
+%resolved = ( rmsemax < tol );
 
 end
 

@@ -21,26 +21,18 @@ else
     style = 'k-';
 end
 
+lw = 2;
+
 parser = inputParser;
 parser.KeepUnmatched = true;
 addParameter(parser, 'endpoints', true, @islogical);
 parse(parser, varargin{:});
+keys = fieldnames(parser.Unmatched);
+vals = struct2cell(parser.Unmatched);
+v = [keys(:).' ; vals(:).'];
+varargin = v(:).';
 
 showEndpoints = parser.Results.endpoints;
-
-% p = struct();
-% p.delta = parser.Results.delta;
-% p.align = parser.Results.align;
-% p.a     = parser.Results.amp;
-% p.f     = parser.Results.freq;
-% p.gap   = parser.Results.gap;
-% 
-% p = struct();
-% p.delta = parser.Results.delta;
-% p.align = parser.Results.align;
-% p.a     = parser.Results.amp;
-% p.f     = parser.Results.freq;
-% p.gap   = parser.Results.gap;
 
 holdState = ishold();
 
@@ -56,16 +48,12 @@ holdState = ishold();
     end
     hold on
     for k = 1:S.np
-    %for k = 805:806
-        %plot(x{k}(:,1), x{k}(:,2), style, 'MarkerSize', 12, varargin{:})
-        plot(x{k}(:,1), x{k}(:,2), style, 'LineWidth', 2, 'MarkerSize', 15);
-        %plot(x{k}(:,1), x{k}(:,2), 'k.', 'MarkerSize', 15);
+        x{k} = [real(S.zbreaks(k)) imag(S.zbreaks(k)) ; x{k} ; real(S.zbreaks(k+1)) imag(S.zbreaks(k+1))];
+        plot(x{k}(:,1), x{k}(:,2), style, 'LineWidth', lw, 'MarkerSize', 15, varargin{:});
     end
     if ( strcmpi(S.rule, 'panel') && showEndpoints )
         % Plot the panel endpoints
-        %plot(S.f(S.breaks), 'k+', 'MarkerSize', 10, 'LineWidth', 1)
-        %plot(S.zbreaks, 'k+', 'MarkerSize', 10, 'LineWidth', 1)
-        plot(S.zbreaks, 'k.', 'MarkerSize', 15)
+        plot(S.zbreaks, 'k.', 'MarkerSize', 15, varargin{:})
     end
     hold off
 % end
@@ -73,7 +61,7 @@ holdState = ishold();
 axis equal
 
 % Return hold state:
-if ( ~holdState), hold off, end
+if ( ~holdState ), hold off, end
 % Assign output if required:
 if ( nargout > 0 ), varargout = {h}; end
 
