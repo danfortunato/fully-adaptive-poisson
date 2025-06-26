@@ -47,16 +47,8 @@ elseif ( ~isempty(density) )
             u = SLP_eval_close_global(source, target, density, side);
         elseif ( strcmpi(source.rule, 'panel') )
             u = SLP_eval_close_panel(source, target, density, side, tol);
-            %error('SLP panel-based close evaluation is not implemented.');
         end
     else
-%                     x = cell2mat(source.x);
-%                     w = cell2mat(source.w);
-%                     t = target(:,1)+target(:,2)*1i;
-%                     x = x(:,1)+x(:,2)*1i;
-%                     d = bsxfun(@minus,t,x.'); % C-# displacements mat
-%                     u = bsxfun(@times, log(abs(d)), -(1/2/pi)*w(:)');  % prefactor & wei
-%                     u = u * density;
         % Use FMM
         u = FMM_eval(source, target, 'charge', density, 'tol', tol);
     end

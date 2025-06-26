@@ -69,6 +69,4 @@ for k = 1:np
 
 end
 
-%S_corr(1:size(D_corr,1)+1:end) = 0;
-
 end

@@ -70,10 +70,10 @@ r1= real(d);
 r2= imag(d);
 ss = sameseg(t,s);
 if ss
-  A = -log(abs(d)) + util.circulant(0.5*log(4*sin(pi*(0:N-1)/N).^2));   % peri log
+  A = -log(abs(d)) + circulant(0.5*log(4*sin(pi*(0:N-1)/N).^2));   % peri log
   A(diagind(A)) = -log(s.sp);                       % diagonal limit
   m = 1:N/2-1; Rjn = ifft([0 1./m 2/N 1./m(end:-1:1)])/2;  % Kress Rj(N/2)/4pi
-  A = A/N + util.circulant(Rjn); % includes SLP prefac 1/2pi. Kress peri log matrix L
+  A = A/N + circulant(Rjn); % includes SLP prefac 1/2pi. Kress peri log matrix L
   A = bsxfun(@times, A, s.sp.');   % do speed factors (2pi/N weights already)
 else
   A = bsxfun(@times, log(abs(d)), -(1/2/pi)*s.w(:)');  % prefactor & wei

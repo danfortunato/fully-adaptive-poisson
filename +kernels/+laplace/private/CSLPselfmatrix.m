@@ -26,7 +26,7 @@ if ( side == 'e')
 else
     Rjn = ifft([0 0*m 1/N 1./m(end:-1:1)]);
 end
-A = A/N + util.circulant(Rjn); % incl 1/2pi SLP prefac. drops const part in imag
+A = A/N + circulant(Rjn);        % incl 1/2pi SLP prefac. drops const part in imag
 A = bsxfun(@times, A, speed.');  % include speed (2pi/N weights already in)
 
 end
