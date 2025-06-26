@@ -42,12 +42,13 @@ Timer.toc('Boundary solve');
 
 end
 
+function u_bulk = solveBulk(S, opts)
 %SOLVEBULK   Solve the bulk problem.
 %   u_bulk = SOLVEBULK(S) computes a function u_bulk such that
 %
 %      lap(u_bulk) = S.tf  in S.domain.
 
-u_bulk = treefun2.poisson(-S.tf, S.isource);
+u_bulk = boxcode2d(-S.tf, opts.tol);
 
 end
 

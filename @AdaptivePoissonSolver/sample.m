@@ -36,6 +36,17 @@ if ( any(inStrip, 'all') )
     uu_s(notFound) = nan;
     uu(inStrip) = uu_s;
     Timer.toc('Evaluate from strip');
+
+    % Timer.tic();
+    % xrem = xx_s(notFound);
+    % yrem = yy_s(notFound);
+    % ubulk = u.bulk(xrem, yrem);
+    % uglue = u.glue.int(xrem, yrem);
+    % ubc   = u.bc(xrem, yrem);
+    % remInGamma = isinterior(S.Gamma, xrem, yrem);
+    % uu_s(notFound(remInGamma)) = ubulk(remInGamma) + uglue(remInGamma) + ubc(remInGamma);
+    % uu(inStrip) = uu_s;
+    % Timer.toc('Re-evaluate miscategorized strip points');
 end
 
 uu = real(uu);
@@ -44,6 +55,7 @@ end
 
 function [tt_s, rr_s, globalIdx, notFound] = assignStripPoints(S, xx_s, yy_s)
 
+tol = 1e-11;
 nthreads = 8;
 dom = S.strip_dom;
 n = size(dom(1).x, 2);
@@ -66,7 +78,7 @@ for k = 1:length(dom)
     ny = S.gam_nx_cheb{k}(:,2);
     [tt, rr, found_k] = getElemCoordinates(xx_s(testIdx), yy_s(testIdx), ...
       S.gamx_cheb{k}, S.gamy_cheb{k}, S.gam1x_cheb{k}, S.gam1y_cheb{k}, ...
-      nx, ny, xcheb, vcheb, nthreads);
+      nx, ny, xcheb, vcheb, nthreads, tol);
     %xfun = chebfun2(dom(k).x);
     %yfun = chebfun2(dom(k).y);
     %[tt, rr, found_k] = util.cart2curv_element(xfun, yfun, xx_s(testIdx), yy_s(testIdx), [0 0]);

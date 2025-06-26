@@ -21,6 +21,7 @@ classdef AdaptivePoissonSolver < handle %#ok<*PROPLC>
 
         strip_dom    % Curvilinear mesh defining strip region
         strip_solver % Strip solver
+        opts
 
     end
 
@@ -70,6 +71,7 @@ classdef AdaptivePoissonSolver < handle %#ok<*PROPLC>
             else
                 opts = setDefaults(opts, defaults);
             end
+            S.opts = opts;
 
             S.n     = Gamma.N;
             S.n_re  = opts.n_re;
@@ -84,12 +86,14 @@ classdef AdaptivePoissonSolver < handle %#ok<*PROPLC>
             Timer().toc('Resampling Gamma');
 
             Timer.tic();
-            S.Gamma1 = defineGamma1(S.Gamma_re, opts);
+            S.Gamma1 = AdaptivePoissonSolver.defineGamma1(S.Gamma_re, opts);
             Timer.toc('Defining Gamma''');
 
             S.domain = boundingbox(S.Gamma, 1.1);
-            S.domain([1 3]) = min(S.domain);
-            S.domain([2 4]) = max(S.domain);
+            dx = diff(S.domain(1:2))/2; cx = sum(S.domain(1:2))/2;
+            dy = diff(S.domain(3:4))/2; cy = sum(S.domain(3:4))/2;
+            d = max(dx, dy);
+            S.domain = [cx-d cx+d cy-d cy+d];
 
             S.gamxy  = cell2mat(S.Gamma.x);
             S.gamx   = S.gamxy(:,1);
@@ -112,6 +116,14 @@ classdef AdaptivePoissonSolver < handle %#ok<*PROPLC>
             Timer.toc('Building strip grid');
 
             S.f = f;
+            idx = isStripResolved(S.strip_dom, S.f, opts.tol);
+            if ( ~isempty(idx) )
+                warning('Inhomogeneity is not resolved to requested tolerance in strip. Refining...');
+                Gamma_ref = refine(Gamma, 1, idx);
+                S = AdaptivePoissonSolver(Gamma_ref, f, opts);
+                return
+            end
+
             Timer.tic();
             [S.tf, S.isource] = constructTreeIntension(S, S.f, opts);
             Timer.toc('Constructing tree');
@@ -122,28 +134,11 @@ classdef AdaptivePoissonSolver < handle %#ok<*PROPLC>
 
     end
 
-end
+    methods ( Static )
 
-function Gamma1 = defineGamma1(Gamma, opts)
+        varargout = defineGamma1(varargin);
 
-defaults = [];
-defaults.beta = 1;
-defaults.bleed = 5;
-defaults.stripWidth = 0.5;
-
-if ( nargin < 2 )
-    opts = defaults;
-else
-    opts = setDefaults(opts, defaults);
-end
-
-n = Gamma.N;
-np = Gamma.np;
-[x, y] = smoothStrip(Gamma, n, opts);
-xleg = chebvals2legvals(reshape(x, n, np));
-yleg = chebvals2legvals(reshape(y, n, np));
-z1 = mat2cell(xleg(:) + 1i*yleg(:), repmat(n, np, 1), 1);
-Gamma1 = Boundary(z1);
+    end
 
 end
 
@@ -184,5 +179,33 @@ for k = 1:np
     yy{k} = t.*gam1y_cheb{k}.' + (1-t).*gamy_cheb{k}.';
 end
 strip_dom = cell2struct([xx yy], {'x','y'}, 2);
+
+end
+
+function idx = isStripResolved(dom, f, tol)
+
+[ny, nx] = size(dom(1).x);
+xx = cat(3, dom.x);
+yy = cat(3, dom.y);
+ff = feval(f, xx, yy);
+hx = max(xx, [], 1:2) - min(xx, [], 1:2);
+hy = max(yy, [], 1:2) - min(yy, [], 1:2);
+hh = squeeze(min(hx, hy));
+
+eta = 0;
+resolved = false(length(dom), 1);
+for k = 1:length(dom)
+    vals = ff(:,:,k);
+    coeffs = chebtech2.vals2coeffs( chebtech2.vals2coeffs(vals).' ).';
+    coeffs = coeffs(1:ny,1:nx);
+    Ex = sum(abs(coeffs(end-1:end,:)), 'all') / (2*nx);
+    Ey = sum(abs(coeffs(:,end-1:end)), 'all') / (2*ny);
+    err_cfs = (Ex + Ey) / 2;
+    h = hh(k);
+    vmax = max(abs(vals(:)));
+    resolved(k) = ( err_cfs * h^eta < tol * max(vmax, 1) );
+end
+
+idx = find(~resolved);
 
 end
