@@ -7,6 +7,15 @@
 [submodule "external/treefun"]
 	path = external/treefun
 	url = https://github.com/danfortunato/treefun.git
-[submodule "external/boxcode2d"]
-	path = external/boxcode2d
-	url = https://github.com/flatironinstitute/boxcode2d
+[submodule "external/fmmlib2d"]
+	path = external/fmmlib2d
+	url = https://github.com/zgimbutas/fmmlib2d
+[submodule "external/chebfun"]
+	path = external/chebfun
+	url = https://github.com/chebfun/chebfun
+[submodule "external/export_fig"]
+	path = external/export_fig
+	url = https://github.com/altmany/export_fig
+[submodule "external/alignfigs"]
+	path = external/alignfigs
+	url = https://github.com/nickhale/alignfigs

@@ -5,18 +5,16 @@ root = fileparts(mfilename('fullpath'));
 addpath(root)
 addpath([root '/scripts'])
 
-% External dependencies
-addpath([root '/external/treefun'])
-addpath([root '/external/inpoly'])
-addpath([root '/external/kdtree/toolbox'])
-
-if ( isempty(which('chebfun')) )
-    error('Chebfun not found. Please install chebfun.');
-end
-
-if ( isempty(which('fmm2d')) )
-    error('FMMLIB2D not found. Please install FMMLIB2D.');
-end
+% Add external dependencies
+external = [root '/external'];
+addpath([external '/chebfun'])
+addpath([external '/treefun'])
+addpath([external '/treefun/external/boxcode2d/matlab'])
+addpath([external '/inpoly'])
+addpath([external '/kdtree/toolbox'])
+addpath([external '/fmmlib2d/matlab'])
+addpath([external '/alignfigs'])
+addpath([external '/export_fig'])
 
 fprintf(' done.\n');
 
