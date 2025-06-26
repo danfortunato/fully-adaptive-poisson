@@ -3,7 +3,7 @@ function setup
 fprintf('Initializing path directories...')
 root = fileparts(mfilename('fullpath'));
 addpath(root)
-addpath([root '/scripts'])
+addpath([root '/tools'])
 
 % Add external dependencies
 external = [root '/external'];

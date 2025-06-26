@@ -1,7 +1,7 @@
-CXX      = g++-13
+CXX      = g++-14
 MEX      = mex
 MWRAP    = mwrap
 LIBS     = -lgomp
-CXXFLAGS = -fopenmp -O3 -march=native -fPIC -fno-math-errno -DSCTL_QUAD_T=__float128
+CXXFLAGS = -fopenmp -O3 -march=native -fPIC -fno-math-errno
 LDFLAGS  = -bundle
-MEXFLAGS = -I~/Research/SCTL/include -largeArrayDims -DR2008OO CXX=$(CXX) CXXFLAGS='$(CXXFLAGS)' CXXOPTIMFLAGS='' LDFLAGS='$(LDFLAGS)'
+MEXFLAGS = -largeArrayDims -DR2008OO CXX=$(CXX) CXXFLAGS='$(CXXFLAGS)' CXXOPTIMFLAGS='' LDFLAGS='$(LDFLAGS)'

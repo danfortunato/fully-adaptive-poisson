@@ -29,12 +29,14 @@ classdef Timer < handle
             timer.event(end+1) = e;
         end
 
-        function t = toc(message)
+        function [t, spool] = toc(message)
             timer = Timer();
 
             if ( isempty(timer.event) )
                 error('toc() has no matching tic().');
             end
+
+            spool = timer.spool;
 
             e = timer.event(end);
             e.toc = toc(e.tic);

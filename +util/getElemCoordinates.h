@@ -1,6 +1,6 @@
 #include <cmath>
-#include "omp.h"
-#include "sctl.hpp"
+#include <omp.h>
+// #include <sctl.hpp>
 
 double norm(double x, double y)
 {
@@ -69,7 +69,7 @@ double bary(double x, const double fk[N], const double xk[N], const double vk[N]
 }
 
 template<int N>
-void getElemCoordinates(int npts, int nthreads,
+void getElemCoordinates(int npts, int nthreads, double tol,
                         const double *x,     const double *y,
                         const double *gamx,  const double *gamy,
                         const double *gam1x, const double *gam1y,
@@ -77,7 +77,7 @@ void getElemCoordinates(int npts, int nthreads,
                         const double *xcheb, const double *vcheb,
                         double *t, double *r, int *found)
 {
-    double tol = 1e-11;
+    //double tol = 1e-14;
     int idx = N/2;
     double perpx = -ny[idx];
     double perpy =  nx[idx];
@@ -131,6 +131,11 @@ void getElemCoordinates(int npts, int nthreads,
         double norm_q_gam1   = norm(qx-gam1_qx, qy-gam1_qy);
         double norm_gam_gam1 = norm(gam1_qx-gam_qx, gam1_qy-gam_qy);
         if (norm_q_gam + norm_q_gam1 - norm_gam_gam1 > tol ) {
+            // printf("norm = %g, ", norm_q_gam + norm_q_gam1 - norm_gam_gam1);
+            // printf("norm = %g, ", norm_q_gam);
+            // printf("norm1 = %g, ", norm_q_gam1);
+            // printf("norm_tot = %g, ", norm_gam_gam1);
+            // printf("(x,y) = (%g,%g)\n", qx, qy);
             found[i] = 0;
         } else {
             // Compute radial coordinate and map to [-1,1]

@@ -1,0 +1,203 @@
+$ #include "getElemCoordinates.h"
+$
+function handle = getElemCoordinates_(n)
+    if (n < 4 || n > 32)
+        error(['Template has not been instantiated for n = ' num2str(n)]);
+    end
+    handle = eval(['@getElemCoordinates' num2str(n)]);
+end
+
+% function varargout = getElemCoordinates(n, varargin)
+%     persistent handle n
+%     if ( isempty(handle) )
+%         handle = eval(['@getElemCoordinates' num2str(n)]);
+%     end
+%     [varargout{1:nargout}] = handle(varargin{:});
+% end
+
+function [t, r, found] = getElemCoordinates4(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates4(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates6(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates6(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates8(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates8(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates9(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates9(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates10(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates10(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates11(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates11(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates12(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates12(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates13(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates13(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates14(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates14(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates15(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates15(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+end
+
+function [t, r, found] = getElemCoordinates16(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates16(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates18(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates18(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+    end
+
+function [t, r, found] = getElemCoordinates20(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates20(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates21(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates21(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+    
+    end
+
+function [t, r, found] = getElemCoordinates24(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates24(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates30(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates30(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
+
+function [t, r, found] = getElemCoordinates32(x, y, gamx, gamy, gam1x, gam1y, nx, ny, xcheb, vcheb, nthreads, tol)
+
+    npts = size(x, 1);
+    t = zeros(npts, 1);
+    r = zeros(npts, 1);
+    found = zeros(npts, 1);
+    # getElemCoordinates32(int npts, int nthreads, double tol, double[] x, double[] y, double[] gamx, double[] gamy, double[] gam1x, double[] gam1y, double[] nx, double[] ny, double[] xcheb, double[] vcheb, inout double[] t, inout double[] r, inout int[] found);
+    found = logical(found);
+
+end
